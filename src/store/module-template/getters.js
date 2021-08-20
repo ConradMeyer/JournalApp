@@ -1,3 +1,7 @@
-export const myGetters = ({ state }) => {
-    return state
-}
+
+// export const myGetter = ( state ) => {
+//  return state
+// }
+
+
+

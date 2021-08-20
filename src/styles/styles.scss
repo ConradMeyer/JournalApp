@@ -1,17 +1,18 @@
-
 $theme-colors: (
-    "primary":    #264653,
-    "secondary":  #2a9d8f,
-    "success":    #e9c46a,
-    "info":       #0dcaf0,
-    "warning":    #f4a261,
-    "danger":     #e76f51,
-    "light":      #f8f9fa,
-    "dark":       #343a40
-    );
+  "primary":    #264653,
+  "secondary":  #2a9d8f,
+  "success":    #e9c46a,
+  "info":       #0dcaf0,
+  "warning":    #f4a261,
+  "danger":     #e76f51,
+  "light":      #f8f9fa,
+  "dark":       #343a40
+);
 
-    @import 'node_modules/bootstrap/scss/bootstrap.scss';
 
-    .pointer {
-        cursor: pointer;
-    }
+
+@import 'node_modules/bootstrap/scss/bootstrap.scss';
+
+.pointer {
+  cursor: pointer;
+}
