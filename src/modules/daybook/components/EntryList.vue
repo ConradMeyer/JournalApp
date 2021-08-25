@@ -8,7 +8,15 @@
         v-model="term"
       />
     </div>
-
+    <div class="btn-container m-2">
+      <button
+        class="btn btn-primary"
+        @click="$router.push({ name: 'entry', params: { id: 'new' } })"
+      >
+        <i class="fa fa-plus-circle"></i>
+        Nueva entrada
+      </button>
+    </div>
     <div class="entry-scrollarea">
       <Entry v-for="entry in entriesByTerm" :key="entry.id" :entry="entry" />
     </div>
@@ -43,6 +51,16 @@ export default {
 .entry-list-container {
   border-right: 1px solid #2c3e50;
   height: calc(100vh - 56px);
+}
+
+.btn-container {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+
+  button {
+    width: 100%;
+  }
 }
 
 .entry-scrollarea {
