@@ -17,10 +17,17 @@
           <i class="fa fa-trash-alt"></i>
         </button>
 
-        <button class="btn btn-primary">
+        <button @click="onClickImage" class="btn btn-primary">
           Subir foto
           <i class="fa fa-upload"></i>
         </button>
+        <input
+          type="file"
+          @change="onSelectedImage"
+          ref="imageSelector"
+          v-show="false"
+          accept="image/png, image/jpeg"
+        />
       </div>
     </div>
 
@@ -30,7 +37,14 @@
     </div>
 
     <img
-      src="https://www.robertlandscapes.com/wp-content/uploads/2014/11/landscape-322100_1280.jpg"
+      v-if="entry.picture && !localImage"
+      :src="entry.picture"
+      alt="entry-picture"
+      class="img-thumbnail"
+    />
+    <img
+      v-if="localImage"
+      :src="localImage"
       alt="entry-picture"
       class="img-thumbnail"
     />
@@ -42,8 +56,10 @@
 <script>
 import { defineAsyncComponent } from "vue";
 import { mapGetters, mapActions } from "vuex"; // computed
+import Swal from "sweetalert2";
 
 import getDayMonthYear from "../helpers/getDayMonthYear";
+import uploadImage from "../helpers/uploadImage";
 
 export default {
   props: {
@@ -59,6 +75,8 @@ export default {
   data() {
     return {
       entry: null,
+      localImage: null,
+      file: null,
     };
   },
 
@@ -98,6 +116,17 @@ export default {
     },
 
     async saveEntry() {
+      new Swal({
+        title: "Espere por favor",
+        allowOutsideClick: false,
+      });
+
+      Swal.showLoading();
+
+      const picture = await uploadImage(this.file);
+
+      this.entry.picture = picture;
+
       if (this.entry.id) {
         // Actualizar
         await this.updateEntry(this.entry);
@@ -106,11 +135,49 @@ export default {
         const id = await this.createEntry(this.entry);
         this.$router.push({ name: "entry", params: { id } });
       }
+
+      this.file = null;
+      this.localImage = null;
+      Swal.fire("Guardado", "Entrada registrada con éxito.", "success");
     },
 
     async onDeleteEntry() {
-      await this.deleteEntry(this.entry.id);
-      this.$router.push({ name: "no-entry" });
+      const { isConfirmed } = await Swal.fire({
+        title: "¿Estás seguro?",
+        text: "Una vez borrado no se puede recuperar.",
+        showDenyButton: true,
+        confirmButtonText: "Si, estoy seguro",
+      });
+      if (isConfirmed) {
+        new Swal({
+          title: "Espere por favor",
+          allowOutsideClick: false,
+        });
+
+        Swal.showLoading();
+        await this.deleteEntry(this.entry.id);
+        this.$router.push({ name: "no-entry" });
+        Swal.fire("Eliminado", "Entrada borrada con éxito.", "success");
+      }
+    },
+
+    onSelectedImage(event) {
+      const file = event.target.files[0];
+
+      if (!file) {
+        this.localImage = null;
+        this.file = null;
+        return;
+      }
+
+      this.file = file;
+      const fr = new FileReader();
+      fr.onload = () => (this.localImage = fr.result);
+      fr.readAsDataURL(file);
+    },
+
+    onClickImage() {
+      this.$refs.imageSelector.click();
     },
   },
 
@@ -130,7 +197,7 @@ export default {
 textarea {
   font-size: 20px;
   border: none;
-  height: 100%;
+  height: 50vh;
 
   &:focus {
     outline: none;
@@ -140,7 +207,7 @@ textarea {
 img {
   width: 200px;
   position: fixed;
-  bottom: 150px;
+  bottom: 100px;
   right: 20px;
   box-shadow: 0px 5px 10px rgba($color: #000000, $alpha: 0.2);
 }

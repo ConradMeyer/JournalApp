@@ -50,7 +50,7 @@ export default {
 <style lang="scss" scoped>
 .entry-list-container {
   border-right: 1px solid #2c3e50;
-  height: calc(100vh - 56px);
+  // height: calc(100vh - 56px);
 }
 
 .btn-container {
